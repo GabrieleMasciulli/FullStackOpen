@@ -1,57 +1,60 @@
-import React from 'react';
-import Course from './components/Course';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Note from './components/Note';
 
 const App = () => {
-  const courses = [
-    {
-      name: 'Half Stack application development',
-      id: 1,
-      parts: [
-        {
-          name: 'Fundamentals of React',
-          exercises: 10,
-          id: 1,
-        },
-        {
-          name: 'Using props to pass data',
-          exercises: 7,
-          id: 2,
-        },
-        {
-          name: 'State of a component',
-          exercises: 14,
-          id: 3,
-        },
-        {
-          name: 'Redux',
-          exercises: 11,
-          id: 4,
-        },
-      ],
-    },
-    {
-      name: 'Node.js',
-      id: 2,
-      parts: [
-        {
-          name: 'Routing',
-          exercises: 3,
-          id: 1,
-        },
-        {
-          name: 'Middlewares',
-          exercises: 7,
-          id: 2,
-        },
-      ],
-    },
-  ];
+  const [notes, setNotes] = useState([]);
+  const [newNote, setNewNote] = useState('');
+  const [showAll, setShowAll] = useState(true);
+
+  const hook = () => {
+    console.log('effect');
+    axios.get('http://localhost:3001/notes').then((response) => {
+      console.log('promise fulfilled');
+      setNotes(response.data);
+    });
+  };
+  useEffect(hook, []);
+  console.log('render', notes.length, 'notes');
+
+  const addNote = (event) => {
+    event.preventDefault();
+    const noteObj = {
+      id: notes.length + 1,
+      content: newNote,
+      date: new Date().toISOString(),
+      important: Math.random() < 0.5, // 50% chance of being marked as important
+    };
+
+    setNotes(notes.concat(noteObj));
+    setNewNote('');
+  };
+
+  const handleNoteChange = (event) => {
+    console.log(event.target.value);
+    setNewNote(event.target.value);
+  };
+
+  const notesToshow = showAll ? notes : notes.filter((note) => note.important);
 
   return (
     <div>
-      {courses.map((course) => (
-        <Course key={course.id} course={course} />
-      ))}
+      <h1>Notes</h1>
+      <div>
+        <button onClick={() => setShowAll(!showAll)}>
+          show {showAll ? 'important' : 'all'}
+        </button>
+      </div>
+      <ul>
+        {notesToshow.map((note) => (
+          <Note key={note.id} note={note} />
+        ))}
+      </ul>
+
+      <form onSubmit={addNote}>
+        <input value={newNote} onChange={handleNoteChange} />
+        <button type='submit'>save note</button>
+      </form>
     </div>
   );
 };
