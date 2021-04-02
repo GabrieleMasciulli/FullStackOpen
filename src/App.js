@@ -8,14 +8,12 @@ const App = () => {
   const [filter, setFilter] = useState('');
 
   useEffect(() => {
-    console.log('effect');
+    console.log('countries fetching effect');
     axios.get('https://restcountries.eu/rest/v2/all').then((response) => {
-      console.log('request fulfilled');
+      console.log('countries request fulfilled');
       setCountries(response.data);
     });
   }, []);
-
-  console.log('countries', countries);
 
   const handleFilterChange = (e) => {
     setFilter(e.target.value);

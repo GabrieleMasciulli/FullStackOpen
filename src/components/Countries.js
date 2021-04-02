@@ -1,5 +1,4 @@
 import React from 'react';
-import Country from './Country';
 import SingleCountry from './SingleCountry';
 
 const Countries = ({ countries }) => {
@@ -22,7 +21,7 @@ const Countries = ({ countries }) => {
     );
   }
   if (length === 1) {
-    return <SingleCountry countries={countries} />;
+    return <SingleCountry country={countries[0]} />;
   }
   if (length === 0) {
     return <div>No match</div>;
