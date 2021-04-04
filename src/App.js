@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Filter from './components/Filter';
 import Persons from './components/Persons';
 import PersonForm from './components/PersonsForm';
-import axios from 'axios';
+import personService from './services/Phonebook';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -13,13 +13,12 @@ const App = () => {
   console.log('persons', persons);
 
   const hook = () => {
-    console.log('effect');
-    axios.get('http://localhost:3001/persons').then((response) => {
-      console.log('request fulfilled');
-      setPersons(response.data);
+    personService.getAll().then((initialPersons) => {
+      setPersons(persons.concat(initialPersons));
     });
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(hook, []);
 
   const handleNameChange = (e) => {
@@ -34,20 +33,45 @@ const App = () => {
     setFilter(e.target.value);
   };
 
+  const handleDelete = (e) => {
+    const id = e.target.id;
+
+    if (window.confirm(`Want to delete ${e.target.name} ?`)) {
+      personService.removePerson(id).then((response) => {
+        personService.getAll().then((initialPersons) => {
+          setPersons(initialPersons);
+        });
+      });
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const nameIsInPersons =
-      persons.filter((person) => person.name === newName).length > 0;
+      persons.filter(
+        (person) => person.name.toLowerCase() === newName.toLowerCase()
+      ).length > 0;
 
-    const numberIsInPersons =
-      persons.filter((person) => person.number === newNumber).length > 0;
+    if (nameIsInPersons) {
+      const popup = window.confirm(
+        `${newName} is already added to phonebook, replace the old number with a new one?`
+      );
 
-    if (nameIsInPersons || numberIsInPersons) {
-      if (nameIsInPersons) {
-        window.alert(`${newName} is already added to phonebook...`);
-      } else {
-        window.alert(`${newNumber} is already added to phonebook...`);
+      if (popup) {
+        const oldPerson = persons.find(
+          (person) => person.name.toLowerCase() === newName.toLowerCase()
+        );
+        const id = oldPerson.id;
+        const newPerson = { ...oldPerson, number: newNumber };
+
+        personService.updatePerson(id, newPerson).then((returnedPerson) => {
+          setPersons(
+            persons.map((person) =>
+              person.id === id ? returnedPerson : person
+            )
+          );
+        });
       }
 
       setNewName('');
@@ -58,7 +82,10 @@ const App = () => {
         number: newNumber,
       };
 
-      setPersons(persons.concat(personObj));
+      personService.addPerson(personObj).then((response) => {
+        setPersons(persons.concat(response));
+      });
+
       setNewName('');
       setNewNumber('');
     }
@@ -88,7 +115,7 @@ const App = () => {
 
       <h2>Numbers</h2>
 
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} remove={handleDelete} />
     </div>
   );
 };

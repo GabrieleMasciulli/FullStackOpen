@@ -1,9 +1,16 @@
 import React from 'react';
 
-const Person = ({ name, number }) => {
+const Person = ({ name, number, id, deleteHandler }) => {
   return (
     <li>
-      {name}, {number}
+      {name}, {number}{' '}
+      <input
+        name={name}
+        type='button'
+        value='delete'
+        id={id}
+        onClick={deleteHandler}
+      />
     </li>
   );
 };
