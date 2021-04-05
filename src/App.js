@@ -3,12 +3,15 @@ import Filter from './components/Filter';
 import Persons from './components/Persons';
 import PersonForm from './components/PersonsForm';
 import personService from './services/Phonebook';
+import Notifications from './components/Notifications';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [filter, setFilter] = useState('');
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   console.log('persons', persons);
 
@@ -34,14 +37,25 @@ const App = () => {
   };
 
   const handleDelete = (e) => {
-    const id = e.target.id;
+    const id = parseInt(e.target.id);
 
     if (window.confirm(`Want to delete ${e.target.name} ?`)) {
-      personService.removePerson(id).then((response) => {
-        personService.getAll().then((initialPersons) => {
-          setPersons(initialPersons);
+      personService
+        .removePerson(id)
+        .then((response) => {
+          setPersons(persons.filter((person) => person.id !== id));
+        })
+        .catch((error) => {
+          setErrorMessage(
+            `Person '${e.target.name}' was already removed from the server.`
+          );
+
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
+
+          setPersons(persons.filter((person) => person.id !== id));
         });
-      });
     }
   };
 
@@ -84,7 +98,12 @@ const App = () => {
 
       personService.addPerson(personObj).then((response) => {
         setPersons(persons.concat(response));
+        setSuccessMessage(`Added '${newName}' successfully to Phonebook`);
       });
+
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 5000);
 
       setNewName('');
       setNewNumber('');
@@ -100,6 +119,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notifications.DeleteError message={errorMessage} />
+      <Notifications.Success message={successMessage} />
 
       <Filter handleInput={handleFilterChange} />
 
