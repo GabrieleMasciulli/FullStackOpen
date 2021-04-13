@@ -37,7 +37,7 @@ const App = () => {
   };
 
   const handleDelete = (e) => {
-    const id = parseInt(e.target.id);
+    const id = e.target.id;
 
     if (window.confirm(`Want to delete ${e.target.name} ?`)) {
       personService
