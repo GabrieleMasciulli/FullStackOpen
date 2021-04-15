@@ -38,7 +38,6 @@ const App = () => {
 
   const handleDelete = (e) => {
     const id = e.target.id;
-
     if (window.confirm(`Want to delete ${e.target.name} ?`)) {
       personService
         .removePerson(id)
