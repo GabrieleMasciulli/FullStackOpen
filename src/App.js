@@ -78,13 +78,18 @@ const App = () => {
         const id = oldPerson.id;
         const newPerson = { ...oldPerson, number: newNumber };
 
-        personService.updatePerson(id, newPerson).then((returnedPerson) => {
-          setPersons(
-            persons.map((person) =>
-              person.id === id ? returnedPerson : person
-            )
-          );
-        });
+        personService
+          .updatePerson(id, newPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id === id ? returnedPerson : person
+              )
+            );
+          })
+          .catch((error) => {
+            setErrorMessage(error.response.data.error);
+          });
       }
 
       setNewName('');
@@ -95,13 +100,19 @@ const App = () => {
         number: newNumber,
       };
 
-      personService.addPerson(personObj).then((response) => {
-        setPersons(persons.concat(response));
-        setSuccessMessage(`Added '${newName}' successfully to Phonebook`);
-      });
+      personService
+        .addPerson(personObj)
+        .then((createdPerson) => {
+          setPersons(persons.concat(createdPerson));
+          setSuccessMessage(`Added '${newName}' successfully to Phonebook`);
+        })
+        .catch((error) => {
+          setErrorMessage(error.response.data.error);
+        });
 
       setTimeout(() => {
         setSuccessMessage(null);
+        setErrorMessage(null);
       }, 5000);
 
       setNewName('');
