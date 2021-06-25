@@ -59,7 +59,7 @@ const App = () => {
       .then(returnedNote => {
         setNotes(notes.map(note => (note.id === id ? returnedNote : note)))
       })
-      .catch(error => {
+      .catch(() => {
         setErrorMessage(
           `Note '${note.content}' was already removed from server`
         )
@@ -109,7 +109,7 @@ const App = () => {
             password={password}
             handleUsernameChange={({ target }) => setUsername(target.value)}
             handlePasswordChange={({ target }) => setPassword(target.value)}
-            onSubmit={handleLogin}
+            handleSubmit={handleLogin}
           />
           <button onClick={() => setLoginVisible(false)}>cancel</button>
         </div>
