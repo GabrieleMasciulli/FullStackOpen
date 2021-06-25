@@ -8,7 +8,7 @@ const NoteForm = ({ createNote }) => {
   }
 
   const addNote = e => {
-    e.preventdefault()
+    e.preventDefault()
     createNote({
       content: newNote,
       date: new Date().toISOString(),
