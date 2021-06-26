@@ -1,0 +1,34 @@
+import React from 'react'
+import '@testing-library/jest-dom/extend-expect'
+import { render, fireEvent } from '@testing-library/react'
+import Togglable from '../components/Togglable'
+
+describe('<Togglable />', () => {
+  let component
+
+  beforeEach(() => {
+    component = render(
+      <Togglable buttonLabel='show...'>
+        <div className='testDiv' />
+      </Togglable>
+    )
+  })
+
+  test('should render its children', () => {
+    const testDiv = component.container.querySelector('.testDiv')
+    expect(testDiv).toBeDefined()
+  })
+
+  test('should not display the children at the beginning', () => {
+    const div = component.container.querySelector('.togglableContent')
+    expect(div).toHaveStyle('display: none')
+  })
+
+  test('should display the children after clicking the button ', () => {
+    const button = component.getByText('show...')
+    fireEvent.click(button)
+
+    const div = component.container.querySelector('.togglableContent')
+    expect(div).not.toHaveStyle('display: none')
+  })
+})
