@@ -31,4 +31,15 @@ describe('<Togglable />', () => {
     const div = component.container.querySelector('.togglableContent')
     expect(div).not.toHaveStyle('display: none')
   })
+
+  test('should close the toggled content', () => {
+    const button = component.container.querySelector('button')
+    fireEvent.click(button)
+
+    const closeButton = component.container.querySelector('button:nth-child(2)')
+    fireEvent.click(closeButton)
+
+    const div = component.container.querySelector('.togglableContent')
+    expect(div).toHaveStyle('display: none')
+  })
 })
