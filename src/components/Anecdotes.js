@@ -1,4 +1,5 @@
 import React from 'react'
+import Filter from './Filter'
 import { useSelector, useDispatch } from 'react-redux'
 import { voteAnecdote } from '../reducers/anecdoteReducer'
 import { messageChange, removeMessage } from '../reducers/messageReducer'
@@ -17,7 +18,13 @@ const Anecdote = ({ anecdote, onVote }) => {
 
 const Anecdotes = () => {
   const dispatch = useDispatch()
-  const anecdotes = useSelector(state => state.anecdotes)
+  const anecdotes = useSelector(({ anecdotes, filter }) => {
+    return filter === 'ALL'
+      ? anecdotes
+      : anecdotes.filter(({ content }) =>
+          content.toLowerCase().includes(filter.toLowerCase())
+        )
+  })
   const sortedAnecdotes = anecdotes.sort((a, b) => b.votes - a.votes)
 
   const handleVote = anecdote => {
@@ -32,6 +39,8 @@ const Anecdotes = () => {
   return (
     <div>
       <h2>Anecdotes</h2>
+
+      <Filter />
 
       {sortedAnecdotes.map(anecdote => (
         <Anecdote
